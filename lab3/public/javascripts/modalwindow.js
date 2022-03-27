@@ -1,0 +1,1 @@
+$(()=>{$(".modal span").on("click",a=>{$(".modal").css({display:"none"})})});

@@ -1,0 +1,161 @@
+body{
+  margin: 5px;
+}
+/* main buttons */
+.main-buttons{
+  button{
+    background-color: white;
+    border: 1px solid grey;
+    border-radius: 10px;
+    color: dimgrey;
+    font-family: "Times New Roman";
+    transition: .5s ease;
+    font-weight: bolder;
+    font-size: xx-large;
+    &:hover{
+      background-color: lightblue;
+    }
+  }
+}
+#add-picture{
+  width: 100%;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  button:hover{
+    background-color: lightgreen;
+  }
+}
+/* any button */
+.my-button{
+  font-family: "Times New Roman";
+  font-weight: bolder;
+  font-size: large;
+}
+/* add picture modal window style */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+/* Modal Content */
+.modal-content {
+  position: relative;
+  background-color: #fefefe;
+  margin: auto;
+  padding: 0;
+  border: 1px solid #888;
+  width: 80%;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+  -webkit-animation-name: animatetop;
+  -webkit-animation-duration: 0.4s;
+  animation-name: animatetop;
+  animation-duration: 0.4s
+}
+/* Add Animation */
+@-webkit-keyframes animatetop {
+  from {top:-300px; opacity:0}
+  to {top:0; opacity:1}
+}
+@keyframes animatetop {
+  from {top:-300px; opacity:0}
+  to {top:0; opacity:1}
+}
+.header{
+  font-family: "Times New Roman";
+  font-weight: bolder;
+  font-size: x-large;
+  text-align: center;
+}
+/* close button */
+.close-pseudo-hover-focus(){
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+.close{
+  color: white;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  border-radius: 15px;
+  &:hover{
+    .close-pseudo-hover-focus();
+  }
+  &:focus{
+    .close-pseudo-hover-focus();
+  }
+}
+/* modal */
+@modal-padding: 2px 16px;
+.modal-header {
+  padding: @modal-padding;
+  background-color: grey;
+  color: white;
+}
+
+.modal-body {
+  padding: @modal-padding;
+}
+
+.modal-footer {
+  padding: @modal-padding;
+  background-color: #5cb85c;
+  color: white;
+}
+/* picture */
+.picture{
+  width: 50%;
+  margin: auto;
+  padding: 50px;
+  img{
+    width: 100%;
+    height: auto;
+    transition: .5s ease;
+    &:hover{
+      opacity: 0.5;
+    }
+  }
+  div{
+    font-size: x-large;
+    text-align: center;
+  }
+}
+/* table */
+.table-bg-color(@x){
+  background-color: @x;
+}
+.table{
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+}
+thead{
+  .table-bg-color(#96D4D4);
+}
+
+tbody{
+  .table-bg-color(lightgrey);
+}
+
+th{
+  color: black;
+  border-collapse: collapse;
+  height: 50px;
+}
+#settings, #auction-date, #auction-timeout, #auction-fam-time, #auction-timeleft{
+  width: 100%;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

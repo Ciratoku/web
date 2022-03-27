@@ -1,0 +1,1 @@
+$(()=>{$(document).on("click",".table #del-participant",t=>{var e=$(t.target).attr("value"),e=(console.log(e),window.location.pathname+"/delete"+e);console.log(e),$.ajax({url:e,type:"post",success:e=>{"success"===JSON.parse(e).msg&&$(t.target).parent().parent().remove()}})})});

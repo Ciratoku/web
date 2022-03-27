@@ -1,0 +1,35 @@
+#add-picture-modal.modal
+    div.modal-content
+        div.modal-header
+            span.close &times;
+            p.header Добавить картину
+        div.modal-body
+            form#data(method="post" enctype="multipart/form-data")
+                label(for="file").header Изображение
+                br
+                input#file(type="file" name="file" accept="image/*").my-button
+                br
+                label(for="author").header Автор
+                br
+                input#author(type="text" name="author" value="")
+                br
+                label(for="title").header Название
+                br
+                input#title(type="text" name="title" value="")
+                br
+                label(for="desc").header Описание
+                br
+                input#desc(type="text" name="desc" value="")
+                br
+                label(for="price").header Стартовая цена
+                br
+                input#price(type="number" name="price" value="")
+                br
+                label Участвует в торгах
+                br
+                input#av(type="radio" name="isParticipate" value="true" checked)
+                label(for="av") Да
+                input#nav(type="radio" name="isParticipate" value="false")
+                label(for="nav") Нет
+                br
+                input#add(type="submit").my-button

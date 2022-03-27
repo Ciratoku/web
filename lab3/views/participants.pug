@@ -1,0 +1,64 @@
+doctype html
+
+html(lang="ru")
+    head
+        meta(charset="utf-8")
+        title Participants
+        link(href='/public/stylesheets/main.min.css', rel='stylesheet')
+        script(type="text/javascript" src="https://code.jquery.com/jquery-latest.min.js")
+        script(src="../public/javascripts/goto.js")
+        script(src="../public/javascripts/modalwindow.js")
+        script(src="../public/javascripts/addparticipants.js")
+        script(src="../public/javascripts/deleteparticipant.js")
+        script(src="../public/javascripts/editparticipant.js")
+    body
+        include mainbuttons
+        table.table
+            thead
+                tr
+                    th Имя
+                    th Кол-во денег
+                    th Удалить
+                    th Редактировать
+            tbody
+                -for(const participant of participants)
+                    tr
+                        th#tname= participant.name
+                        th#tmoney= participant.money
+                        th
+                            button#del-participant(name="id" value=`${participant.id}`).my-button -
+                        th
+                            button#edit-participant(name="id" value=`${participant.id}`).my-button &#9881;
+    button#add-participant-button.my-button +
+    #add-participant-modal.modal
+        div.modal-content
+            div.modal-header
+                span.close &times;
+                p.header Добавить участника
+            div.modal-body
+                form#data(method="post")
+                    label(for="name").header Имя
+                    br
+                    input#name(type="text" name="name" value="")
+                    br
+                    label(for="money").header Деньги
+                    br
+                    input#money(type="number" name="money" value="")
+                    br
+                    input#add(type="submit").my-button
+    #edit-participant-modal.modal
+        div.modal-content
+            div.modal-header
+                span.close &times;
+                p.header Редактировать участника
+            div.modal-body
+                form#edit(method="post")
+                    label(for="ename").header Имя
+                    br
+                    input#ename(type="text" name="name" value="")
+                    br
+                    label(for="emoney").header Деньги
+                    br
+                    input#emoney(type="number" name="money" value="")
+                    br
+                    input#edit-button(type="submit").my-button

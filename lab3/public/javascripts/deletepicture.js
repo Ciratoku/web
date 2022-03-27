@@ -1,0 +1,1 @@
+$(document).ready(()=>{$(document).on("click","div#pictures div.picture div.modal-header #delete",function(t){var e=$(this).attr("value"),a=JSON.stringify({id:e});$.ajax({url:window.location.pathname+"delete"+e,type:"post",data:a,contentType:"application/json",dataType:"json",success:function(e){$(t.target).parent().parent().remove()}})})});

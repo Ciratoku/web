@@ -1,0 +1,58 @@
+doctype html
+
+html(lang="ru")
+    head
+        meta(charset="utf-8")
+        link(href='/public/stylesheets/main.min.css', rel='stylesheet')
+        script(type="text/javascript" src="https://code.jquery.com/jquery-latest.min.js")
+        script(src="../public/javascripts/goto.js")
+        script(src="../public/javascripts/editpicture.js")
+        script(src="../public/javascripts/modalwindow.js")
+        title= picture.title
+    body
+        include mainbuttons
+        div.picture
+            div.modal-header
+                p= `"${picture.title}"`
+            img(src=`${picture.src}`)
+            div
+                p#authorp= `Автор: ${picture.author}`
+            div
+                p#descp= picture.desc
+            div
+                p#pricep= picture.price + " " + "RUB"
+        #add-picture-modal.modal
+            div.modal-content
+                div.modal-header
+                    span.close &times;
+                    p.header Редактировать картину
+                div.modal-body
+                    form#data(method="post" enctype="multipart/form-data")
+                        label(for="file").header Изображение
+                        br
+                        input#file(type="file" name="file" accept="image/*").my-button
+                        br
+                        label(for="author").header Автор
+                        br
+                        input#author(type="text" name="author" value=`${picture.author}`)
+                        br
+                        label(for="title").header Название
+                        br
+                        input#title(type="text" name="title" value=`${picture.title}`)
+                        br
+                        label(for="desc").header Описание
+                        br
+                        input#desc(type="text" name="desc" value=`${picture.desc}`)
+                        br
+                        label(for="price").header Стартовая цена
+                        br
+                        input#price(type="number" name="price" value=`${picture.price}`)
+                        br
+                        label Участвует в торгах
+                        br
+                        input#av(type="radio" name="isParticipate" value="true" checked)
+                        label(for="av") Да
+                        input#nav(type="radio" name="isParticipate" value="false")
+                        label(for="nav") Нет
+                        br
+                        input#add(type="submit").my-button

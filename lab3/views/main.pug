@@ -1,0 +1,53 @@
+doctype html
+
+html(lang="ru")
+    head
+        meta(charset="utf-8")
+        title Auction
+        link(href='/public/stylesheets/main.min.css', rel='stylesheet')
+        script(type="text/javascript" src="https://code.jquery.com/jquery-latest.min.js")
+        script(src="../public/javascripts/addpicture.js")
+        script(src="../public/javascripts/deletepicture.js")
+        script(src="../public/javascripts/goto.js")
+        script(src="../public/javascripts/modalwindow.js")
+        script(src="../public/javascripts/editsettings.js")
+        script(src="../public/javascripts/timeout.js")
+    body
+        include mainbuttons
+        #add-picture.main-buttons
+            button#add-picture-button Добавить картину
+        include addpictureform
+        include time
+        #settings
+            button.my-button &#9881;
+        #pictures
+            -for (const picture of pictures)
+                    div.picture
+                        div.modal-header
+                            button#delete(name="value" value=`${picture.id}`).close &times;
+                            p= `"${picture.title}"`
+                        img(src=`${picture.src}`)
+                        div
+                            p= `Автор: ${picture.author}`
+                        div
+                            p= picture.price + " " + "RUB"
+        #settings-modal.modal
+            div.modal-content
+                div.modal-header
+                    span.close &times;
+                    p.header Настройка аукциона
+                div.modal-body
+                    form#edit-settings(method="post")
+                        label(for="date").header Дата
+                        br
+                        input#date(type="datetime-local" name="author" value="")
+                        br
+                        label(for="timeout").header Таймаут (в днях)
+                        br
+                        input#timeout(type="number" name="desc" value="1" min="1" max="24")
+                        br
+                        label(for="fam-time").header Время изучения (в днях)
+                        br
+                        input#fam-time(type="number" name="price" value="1" min="1" max="24")
+                        br
+                        input(type="submit").my-button

@@ -1,0 +1,26 @@
+{
+  "name": "lab3",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "@types/jquery": "^3.5.13",
+    "body-parser": "^1.19.1",
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "express": "~4.16.1",
+    "express-fileupload": "^1.2.1",
+    "gulp-babel": "^8.0.0",
+    "gulp-clean-css": "^4.3.0",
+    "gulp-less": "^5.0.0",
+    "gulp-rename": "^2.0.0",
+    "gulp-uglify": "^3.0.2",
+    "http-errors": "~1.6.3",
+    "less": "^4.1.2",
+    "less-middleware": "~2.2.1",
+    "morgan": "~1.9.1",
+    "pug": "2.0.0-beta11"
+  },
+  "devDependencies": {
+    "gulp4": "^4.0.2"
+  }
+}
