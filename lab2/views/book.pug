@@ -1,0 +1,33 @@
+doctype html
+html(lang="ru")
+    head
+        link(href='/public/stylesheets/w3.css', rel='stylesheet')
+        script(src='/public/javascripts/form.js')
+        meta(charset="utf-8")
+        title=book.title
+    body
+        table.w3-table-all.w3-hoverable
+            thead
+                tr.w3-green
+                    th Автор
+                    th Название
+                    th Дата выпуска(Г-М-Д)
+                    th Есть в наличии
+                    th Дата заимствования
+                    th Дата возврата
+                    th Имя
+            tbody
+                tr
+                    th= book.author
+                    th= book.title
+                    th= book.releaseDate
+                    th= book.available == "true" ? 'Да' : 'Нет'
+                    th= book.borrowingDate
+                    th= book.returnDate
+                    th= book.name
+    button#borrow-button(onclick=`showForm("borrow-form")`).w3-button.w3-left Взять
+    include formBorrow
+    form(action=`/${book.id}` method="post")
+        button(type="submit" name="value" value="return" onsubmit="returnMSG()").w3-button.w3-left Вернуть
+    button#red-button(onclick=`showForm("edit-form")`).w3-button.w3-right Ред.
+    include formRed

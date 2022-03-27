@@ -1,0 +1,50 @@
+#edit-form(style="display: none").w3-container.w3-modal
+    div.w3-modal-content.w3-center
+        div.w3-container
+            span(onclick="hideForm('edit-form')").w3-button.w3-display-topright &times;
+            form(action=`/${book.id}`, method="post").w3-container
+                div(style={display: 'none'})
+                    label(for="id") id
+                    br
+                    input#id(name="id" value=`${book.id}`).w3-animate-input
+                br
+                div(style={display: 'block'})
+                    label(for="author") Автор
+                    br
+                    input#author(name="author" value=`${book.author}`).w3-animate-input
+                br
+                div(style={display: 'block'})
+                    label(for="title") Название
+                    br
+                    input#title(name="title" value=`${book.title}`).w3-animate-input
+                br
+                div(style={display: 'block'})
+                    label(for="releaseDate") Дата выхода
+                    br
+                    input#releaseDate(type="date" name="releaseDate" value=`${book.releaseDate}`).w3-animate-input
+                br
+                div(style={display: 'block'})
+                    label В наличии
+                    br
+                    input#av(type="radio" name="available" value="true" checked)
+                    label(for="av") Да
+                    input#nav(type="radio" name="available" value="false")
+                    label(for="nav") Нет
+                br
+                div(style={display: 'block'})
+                    label(for="borrowingDate") Дата взятия
+                    br
+                    input#borrowingDate(type="date" name="borrowingDate" value=`${book.borrowingDate}`).w3-animate-input
+                br
+                div(style={display: 'block'})
+                    label(for="returnDate") Дата возврата
+                    br
+                    input#returnDate(type="date" name="returnDate" value=`${book.returnDate}`).w3-animate-input
+                br
+                div(style={display: 'block'})
+                    label(for="name") Имя
+                    br
+                    input#name(name="name" value=`${book.name}`).w3-animate-input
+                br
+                button(type="submit" onsubmit="hideForm('edit-form')").w3-button Применить
+

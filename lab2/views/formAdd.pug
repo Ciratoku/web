@@ -1,0 +1,46 @@
+#add-form(style="display: none").w3-container.w3-modal
+    div.w3-modal-content.w3-center
+        div.w3-container
+            span(onclick="hideForm('add-form')").w3-button.w3-display-topright &times;
+            div(style={display: 'none'})
+                label(for="id") id
+                br
+                input#id(name="id" value="").w3-animate-input
+            br
+            div(style={display: 'block'})
+                label(for="author") Автор
+                br
+                input#author(name="author" value="").w3-animate-input
+            br
+            div(style={display: 'block'})
+                label(for="title") Название
+                br
+                input#title(name="title" value="").w3-animate-input
+            br
+            div(style={display: 'block'})
+                label(for="releaseDate") Дата выхода
+                br
+                input#releaseDate(type="date" name="releaseDate" value="").w3-animate-input
+            br
+            div(style={display: 'none'})
+                label(for="available") available
+                br
+                input#available(name="available" value="true").w3-animate-input
+            br
+            div(style={display: 'none'})
+                label(for="borrowingDate") borrowingDate
+                br
+                input#borrowingDate(type="date" name="borrowingDate" value="").w3-animate-input
+            br
+            div(style={display: 'none'})
+                label(for="returnDate") returnDate
+                br
+                input#returnDate(type="date" name="returnDate" value="").w3-animate-input
+            br
+            div(style={display: 'none'})
+                label(for="name") name
+                br
+                input#name(name="name" value="").w3-animate-input
+            br
+            button(onclick="addBook();hideForm('add-form')").w3-button Добавить
+

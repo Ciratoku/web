@@ -1,0 +1,38 @@
+doctype html
+html(lang="ru")
+    head
+        link(href='/public/stylesheets/w3.css', rel='stylesheet')
+        script(src='/public/javascripts/form.js')
+        script(src='/public/javascripts/addbook.js')
+        script(src='/public/javascripts/filter.js')
+        meta(charset="utf-8")
+        title="Library"
+    body
+        table#books-table.w3-table-all.w3-striped.w3-hoverable
+            thead
+                tr.w3-blue
+                    th Автор
+                    th Название
+                    th Дата выпуска(Г-М-Д)
+                    th Есть в наличии
+                    th Дата возврата
+                        button(onclick="filter('up')").w3-button.w3-round-xxlarge up
+                        button(onclick="filter('down')").w3-button.w3-round-xxlarge down
+                    th Карточка
+                    th Удалить
+            tbody
+                 - for(let i = 0; i < books.length; i++)
+                    - book = books[i]
+                    tr
+                        th=book.author
+                        th=book.title
+                        th=book.releaseDate
+                        th= book.available=='true' ? 'Да' : 'Нет'
+                        th=book.returnDate
+                        th
+                            button(onclick=`window.location.href+=${book.id};`).w3-button.w3-grey ?
+                        th
+                            form(action="/" method="post")
+                                button(name="value" type="submit" value=`${book.id}`).w3-button.w3-red -
+    button#add-button(onclick="showForm('add-form')").w3-button.w3-round-xxlarge.w3-hover-green +
+    include formAdd
