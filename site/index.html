@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form action="index.html" method="get" onsubmit="store();return false;">
+    <label id="writeNameLabel">Write your name:<br>
+        <input id="name" placeholder="Имя пользователя"><br>
+        <input id="submit" type="submit" value="Ввод" onclick="hideInputAndShowDiv();initGame();GameStart()">
+    </label>
+</form>
+
+<!-- Div with controlling information-->
+<div id="control">
+    Управление:<br>
+    стрелка влево или вправо - переместить фигуру влево или вправо<br>
+    стрелка вниз - уронить фигуру<br>
+    стрелка вверх - повернуть фигуру на 90 градусов<br>
+    пробел - ускорить падение фигуры<br>
+</div>
+<script>
+    let control = document.getElementById('control');
+    control.style.position = "absolute";
+    control.style.display = 'none';
+    control.style.left = 25 * 12 + 'px'; //x
+    control.style.top = 25 * 6 + 'px'; //y
+</script>
+
+<!-- Div with game information (level, player name)-->
+<div id="gameFlow">
+    Player: <b id="username"></b><br>
+    Level: <b id="level"></b><br>
+    Score: <b id="score"></b>
+</div>
+<script>
+    let gameFlow = document.getElementById('gameFlow');
+    gameFlow.style.position = "absolute";
+    gameFlow.style.display = 'none';
+    gameFlow.style.left = 12 * 25 + 'px'; //x
+    gameFlow.style.top = 3 * 25 + 'px'; //y
+</script>
+
+<!-- Div with next tetromino-->
+<div id="nextTetromino">
+    <canvas id="next" width="200" height="50"></canvas>
+</div>
+<script>
+    let next = document.getElementById('nextTetromino');
+    next.style.position = "absolute";
+    next.style.left = 25 * 0 + 'px'; //x
+    next.style.top = 25 * 0 + 'px'; //y
+    next.style.display = 'none';
+</script>
+
+<!-- Div with scoreboard table-->
+<div id="sboard">
+    <pre id="sboardText">
+
+    </pre>
+    <button onclick="hideScoreboardShowSubmit()">Submit menu</button>
+</div>
+<script>
+    let sboard = document.getElementById('sboard');
+    sboard.style.position = "absolute";
+    sboard.style.left = 1 * 25 + 'px'; //x
+    sboard.style.top = 0 * 25 + 'px'; //y
+    sboard.style.display = 'none';
+    sboard.style.font = 'small-caps bold 24px/1 sans-serif';
+</script>
+<div id="gameDiv">
+    <canvas id="game" width="250" height="600"></canvas>
+</div>
+
+<script>
+    var scoreboard;
+    var playername;
+    function store()
+    {
+        playername = document.getElementById('name').value;
+        let scoreboardFromStorage = localStorage.getItem("scoreboard");
+        if(scoreboardFromStorage === undefined || scoreboardFromStorage === null)
+        {
+            scoreboard = new Map();
+            scoreboard.set(playername, 0);
+        }
+        else
+        {
+            scoreboard = new Map(JSON.parse(scoreboardFromStorage));
+            if(scoreboard.get(playername) === undefined)
+            {
+                scoreboard.set(playername, 0);
+            }
+        }
+        //display player name in the div
+        initGameInfo();
+    }
+
+    function initGameInfo()
+    {
+        document.getElementById('username').innerHTML = playername;
+        document.getElementById('level').innerHTML = level.toString();
+        document.getElementById('score').innerHTML = score.toString();
+    }
+
+    function hideInputAndShowDiv()
+    {
+        document.getElementById('writeNameLabel').style.display = 'none';
+        document.getElementById('control').style.display = 'block';
+        document.getElementById('gameFlow').style.display = 'block';
+        document.getElementById('nextTetromino').style.display = 'block';
+        document.getElementById('gameDiv').style.display = 'block';
+    }
+
+    //post game
+    function hideDivsShowScoreboard()
+    {
+        document.getElementById('control').style.display = 'none';
+        document.getElementById('gameFlow').style.display = 'none';
+        document.getElementById('nextTetromino').style.display = 'none';
+        document.getElementById('gameDiv').style.display = 'none';
+        document.getElementById('sboard').style.display = 'block';
+    }
+
+    function scoreboardToDiv()
+    {
+        let sboardT = document.getElementById('sboardText');
+        sboardT.innerHTML = ""; //clear pre tag
+        //sort map
+        [...scoreboard].map(e =>{ return e[1];}).slice().sort(function(a, b) {
+            return a - b;
+        });
+        //scoreboard to pre tag (it could have been table, but...)
+        for (const [key, value] of scoreboard.entries())
+        {
+            sboardT.innerHTML += `${key} : ${value} <br>`;
+        }
+    }
+
+    function hideScoreboardShowSubmit()
+    {
+        let submit = document.getElementById('writeNameLabel');
+        submit.style.display = 'block';
+        document.getElementById('name').value = playername;
+        document.getElementById('sboard').style.display = 'none';
+    }
+    //THE GAME
+    //canvas game
+    const canvas = document.getElementById('game');
+    const context = canvas.getContext('2d');
+
+    //canvas next tetromino
+    const canvas_nt = document.getElementById('next');
+    const context_nt = canvas_nt.getContext('2d');
+    //global vars
+    var tetrominos_sequence = [];
+    var f_row = 22;
+    var f_col = 10;
+    var field = [];
+    var grid = 25;
+    var game_over = false;
+    //game flow
+    var game;
+    var level = 0;
+    var fps = 50;
+    var count = 0;
+    var delay = 20;
+    var score = 0;
+
+    //tetrominos
+    const tetrominos = {
+        'I': [
+            [1,1,1,1],
+        ],
+        'J': [
+            [1,0,0],
+            [1,1,1],
+        ],
+        'L': [
+            [0,0,1],
+            [1,1,1],
+        ],
+        'O': [
+            [1,1],
+            [1,1],
+        ],
+        'S': [
+            [0,1,1],
+            [1,1,0],
+        ],
+        'Z': [
+            [1,1,0],
+            [0,1,1],
+        ],
+        'T': [
+            [0,1,0],
+            [1,1,1],
+        ]
+    };
+    const colors = {
+        'I': 'cyan',
+        'O': 'yellow',
+        'T': 'purple',
+        'S': 'green',
+        'Z': 'red',
+        'J': 'blue',
+        'L': 'orange'
+    };
+
+    //init tetramino
+    var cur_tetromino = getNextTetromino();
+    var next_tetromino = getNextTetromino();
+
+    function initGame()
+    {
+        game_over = 0;
+        level = 0;
+        fps = 50;
+        count = 0;
+        score = 0;
+        for(let row = 0; row < f_row; row++)
+        {
+            field[row] = [];
+            for (let col = 0; col < f_col; col++)
+            {
+                field[row][col] = 0;
+            }
+        }
+    }
+
+    function moving()
+    {
+        context.clearRect(0,0,canvas.width,canvas.height);
+        //draw the field
+        for(let row = 2; row < f_row; row++)
+        {
+            for(let col = 0; col < f_col; col++)
+            {
+                if(field[row][col])
+                {
+                    context.fillStyle = colors[field[row][col]];
+                }
+                else
+                {
+                    context.fillStyle = 'LightGray';
+                }
+                context.fillRect(col * grid, row * grid, grid - 2, grid - 2);
+            }
+        }
+        //draw next tetromino
+        context_nt.fillStyle = colors[next_tetromino.name];
+        for(let row = 0; row < next_tetromino.matrix.length; row++)
+        {
+            for(let col = 0; col < next_tetromino.matrix[row].length; col++)
+            {
+                if(next_tetromino.matrix[row][col])
+                {
+                    context_nt.fillRect((col + next_tetromino.col) * grid, (row + next_tetromino.row) * grid, grid - 2, grid - 2);
+                }
+            }
+        }
+        //draw current tetromino
+        context.fillStyle = colors[cur_tetromino.name];
+        for(let row = 0; row < cur_tetromino.matrix.length; row++)
+        {
+            for(let col = 0; col < cur_tetromino.matrix[row].length; col++)
+            {
+                if(cur_tetromino.matrix[row][col])
+                {
+                    context.fillRect((col + cur_tetromino.col) * grid, (row + cur_tetromino.row) * grid, grid - 2, grid - 2);
+                }
+            }
+        }
+        //draw first two rows in white
+        context.fillStyle = 'white';
+        context.fillRect(0, 0, grid * 10, grid * 2);
+        //drawNext();
+        if(++count > fps)
+        {
+            count = 0;
+            cur_tetromino.row++;
+            if(!isValidMove(cur_tetromino))
+            {
+                cur_tetromino.row--;
+                game_over = placeTetromino(cur_tetromino);
+                if(!game_over)
+                {
+                    checkRows(cur_tetromino);
+                    cur_tetromino = next_tetromino;
+                    next_tetromino = getNextTetromino();
+                    context_nt.clearRect(0, 0, canvas_nt.width, canvas_nt.height);
+                }
+            }
+        }
+        if(game_over)
+        {
+            clearInterval(game);
+            gameOver();
+            //post game interface - scoreboard and switch to the submit menu
+            scoreboardToDiv();
+            hideDivsShowScoreboard();
+        }
+    }
+
+    function isValidMove(tetromino)
+    {
+        //invalid moves: over left, right and bottom borders, over other tetromino border
+        for(let row = 0; row < tetromino.matrix.length; row++)
+        {
+            for (let col = 0; col < tetromino.matrix[row].length; col++)
+            {
+                if(tetromino.matrix[row][col])
+                {
+                    if(col + tetromino.col >= f_col || col + tetromino.col < 0) return false;
+                    if(row + tetromino.row >= f_row || row + tetromino.row < 0) return false;
+                    if(field[row + tetromino.row][col + tetromino.col]) return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    function getRandomInt(max)
+    {
+        return Math.floor(Math.random() * max);
+    }
+
+    function generateSequence()
+    {
+        let sequence = ['I', 'O', 'T', 'S', 'Z', 'J', 'L'];
+        while(sequence.length)
+        {
+            let next_tetrino = sequence.splice(getRandomInt(sequence.length), 1)[0];
+            tetrominos_sequence.push(next_tetrino);
+        }
+    }
+
+    function getNextTetromino()
+    {
+        if(tetrominos_sequence.length === 0)
+        {
+            generateSequence();
+        }
+        const name = tetrominos_sequence.pop();
+        const matrix = tetrominos[name];
+        const col = 4;
+        const row = 0;
+        return{
+            name: name,
+            matrix: matrix,
+            row: row,
+            col: col
+        }
+    }
+
+    function placeTetromino(tetromino)
+    {
+        if(tetromino.row <= 2) return true;
+        for(let row = 0; row < tetromino.matrix.length; row++)
+        {
+            for(let col = 0; col < tetromino.matrix[row].length; col++)
+            {
+                if(tetromino.matrix[row][col])
+                {
+                    field[row + tetromino.row][col + tetromino.col] = tetromino.name;
+                }
+            }
+        }
+        return false;
+    }
+
+    function checkRows(tetromino)
+    {
+        for(let row = 0; row < tetromino.matrix.length; row++)
+        {
+            let line = 0;
+            //count elements in the line
+            for(let col = 0; col < f_col; col++)
+            {
+                if(field[row + tetromino.row][col])
+                {
+                    line++;
+                }
+            }
+            //if amount is equal row length
+            if(line === f_col)
+            {
+                //then clear this row
+                for(let col = 0; col < f_col; col++)
+                {
+                    field[row + tetromino.row][col] = 0;
+                }
+                //shift blocks
+                for(let i = 1, j = 0; row + tetromino.row - i >= 0; i++, j++)
+                {
+                    for(let col = 0; col < f_col; col++)
+                    {
+                        field[row + tetromino.row - j][col] = field[row + tetromino.row - i][col];
+                        field[row + tetromino.row - i][col] = 0;
+                    }
+                }
+                //inc score (incrementing a global variable in a function...)
+                score++;
+                if(score % 4 === 0 && score && fps > 10)
+                {
+                    fps -= 10;
+                    level++;
+                    document.getElementById('level').innerHTML = level.toString();
+                }
+                document.getElementById('score').innerHTML = score.toString();
+            }
+        }
+    }
+
+    //game over function
+    function gameOver()
+    {
+        //if score in scoreboard is less than current score
+        if(scoreboard.get(playername) < score)
+        {
+            //then save change in the scoreboard
+            scoreboard.set(playername, score);
+        }
+        //store new scoreboard map in the localStorage
+        localStorage.setItem("scoreboard", JSON.stringify(Array.from(scoreboard.entries())));
+        //alert player that his game is over
+        alert(`Game Over! ${playername}'s score is ${score}`);
+    }
+    //start game loop function
+    function GameStart()
+    {
+        game = setInterval(moving, delay);
+    }
+    //key detection
+    document.addEventListener('keydown', (event) => {
+        const keyName = event.key;
+        if(keyName === 'ArrowLeft')
+        {
+            if(isValidMove({name: cur_tetromino.name, matrix: cur_tetromino.matrix, row: cur_tetromino.row, col: cur_tetromino.col - 1}))
+            {
+                cur_tetromino.col--;
+            }
+        }
+        else if(keyName === 'ArrowRight')
+        {
+            if(isValidMove({name: cur_tetromino.name, matrix: cur_tetromino.matrix, row: cur_tetromino.row, col: cur_tetromino.col + 1}))
+            {
+                cur_tetromino.col++;
+            }
+        }
+        else if(keyName === 'ArrowDown')
+        {
+            let row = cur_tetromino.row + 1;
+            while(isValidMove({name: cur_tetromino.name, matrix: cur_tetromino.matrix, row: row, col: cur_tetromino.col})) row++;
+            cur_tetromino.row = row - 1;
+        }
+        else if(keyName === 'ArrowUp')
+        {
+            let rotate = (matrix) => {
+                return matrix[0].map((val, index) => matrix.map(row => row[index]).reverse());
+            };
+            let rotated_matrix = rotate(cur_tetromino.matrix);
+            if(isValidMove({name: cur_tetromino.name, matrix: rotated_matrix, row: cur_tetromino.row, col: cur_tetromino.col}))
+            {
+                cur_tetromino.matrix = rotated_matrix;
+            }
+        }
+        else if(keyName === ' ')
+        {
+            if(isValidMove({name: cur_tetromino.name, matrix: cur_tetromino.matrix, row: cur_tetromino.row + 1, col: cur_tetromino.col}))
+            {
+                cur_tetromino.row++;
+            }
+        }
+    });
+</script>
+</body>
+</html>
